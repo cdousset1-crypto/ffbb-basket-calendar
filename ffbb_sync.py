@@ -6,7 +6,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 from urllib.parse import urljoin
@@ -330,12 +330,21 @@ def build_ics(cfg, matches):
     duration = timedelta(minutes=cfg["calendar"]["duration_minutes"])
 
     for m in sorted(matches, key=lambda x: (x.date, x.time, x.child)):
-        start = datetime.fromisoformat(f"{m.date}T{m.time}").replace(tzinfo=tzinfo)
-        end = start + duration
+        # L'heure lue sur FFBB est une heure locale (Europe/Paris). On la
+        # convertit explicitement en UTC avant de l'écrire dans l'ICS : les
+        # objets tzinfo de dateutil ne sont pas toujours bien reconnus par
+        # icalendar lors de la sérialisation avec TZID, ce qui pouvait faire
+        # réappliquer le décalage Europe/Paris une seconde fois côté client
+        # (d'où le décalage de +2h observé). L'UTC (suffixe "Z") est sans
+        # ambiguïté pour tous les lecteurs de calendrier.
+        start_local = datetime.fromisoformat(f"{m.date}T{m.time}").replace(tzinfo=tzinfo)
+        end_local = start_local + duration
+        start = start_local.astimezone(timezone.utc)
+        end = end_local.astimezone(timezone.utc)
 
         event = Event()
         event.add("uid", m.uid)
-        event.add("dtstamp", datetime.now(tzinfo))
+        event.add("dtstamp", datetime.now(timezone.utc))
         event.add("dtstart", start)
         event.add("dtend", end)
         event.add("summary", f"Match basket {m.child}")
