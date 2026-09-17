@@ -1,0 +1,26 @@
+calendar:
+  name: "Basket enfants"
+  output: "basket.ics"
+  timezone: "Europe/Paris"
+  duration_minutes: 90
+
+http:
+  timeout_seconds: 25
+  user_agent: "FFBB-Basket-Calendar/1.0 (+personal calendar synchronization)"
+
+season:
+  # Saison 2026-2027 : les dates de septembre à décembre sont en 2026,
+  # celles de janvier à juin sont en 2027.
+  start_year: 2026
+  start_month: 9
+
+children:
+  - name: "Jules"
+    phases:
+      - name: "phase-1"
+        url: "https://competitions.ffbb.com/ligues/pdl/comites/0044/clubs/pdl0044104/equipes/200000005368033"
+
+  - name: "Bastien"
+    phases:
+      - name: "phase-1"
+        url: "https://competitions.ffbb.com/ligues/pdl/comites/0044/clubs/pdl0044087/equipes/200000005367465"
