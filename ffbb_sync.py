@@ -15,7 +15,7 @@ import requests
 import yaml
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
-from dateutil import tz
+from zoneinfo import ZoneInfo
 
 
 LOG = logging.getLogger("ffbb-sync")
@@ -219,18 +219,55 @@ class FFBBClient:
 
         return ""
 
-    def extract_venue(self, detail_url):
+    def extract_detail_datetime(self, soup):
+        """
+        Extrait la date/heure officielle du match depuis les meta tags
+        (og:description / twitter:description) de la page de détail, du
+        type : "19 sept. 2026 13h00 - Départementale Masculine U11 - ...".
+        Cette donnée s'est avérée plus fiable/à jour que celle affichée sur
+        la page de liste de l'équipe (qui peut rester en cache après un
+        changement d'horaire décidé par le club ou la ligue).
+        """
+        content = ""
+        for attrs in (
+            {"property": "og:description"},
+            {"name": "twitter:description"},
+            {"property": "twitter:description"},
+        ):
+            tag = soup.find("meta", attrs=attrs)
+            if tag and tag.get("content"):
+                content = tag["content"]
+                break
+
+        if not content:
+            return None
+
+        m = re.search(
+            r"(\d{1,2})\s+([A-Za-zÀ-ÿ]+\.?)\s+(\d{4})\s+(\d{1,2})h(\d{2})",
+            content, flags=re.I
+        )
+        if not m:
+            return None
+
+        month = MONTHS.get(m.group(2).lower())
+        if not month:
+            return None
+
+        return {
+            "day": int(m.group(1)),
+            "month": month,
+            "year": int(m.group(3)),
+            "hour": int(m.group(4)),
+            "minute": int(m.group(5)),
+        }
+
+    def extract_venue_from_soup(self, soup, detail_url):
         """
         Cherche d'abord les données sémantiques/JSON-LD, puis, à défaut,
         la structure HTML "label / valeur" utilisée par les pages FFBB
         (span "Adresse" et span "Nom" suivis d'un div frère contenant la
         valeur).
         """
-        if not detail_url:
-            return "", "", ""
-
-        soup = BeautifulSoup(self.get(detail_url), "html.parser")
-
         address = self.parse_jsonld_address(soup)
         if not address:
             address = self.find_value_after_label(soup, "Adresse")
@@ -238,6 +275,11 @@ class FFBBClient:
         venue_name = self.find_value_after_label(soup, "Nom")
 
         return venue_name, address, detail_url
+
+    def fetch_detail_page(self, detail_url):
+        if not detail_url:
+            return None
+        return BeautifulSoup(self.get(detail_url), "html.parser")
 
     def scrape_child(self, child, phase):
         url = phase["url"]
@@ -279,7 +321,29 @@ class FFBBClient:
             # Le match ID FFBB est notre meilleure clé stable.
             uid = f"ffbb-{meta['match_id']}-{slug(child)}@basket-calendar"
 
-            venue_name, venue_address, venue_url = self.extract_venue(detail_url)
+            detail_soup = self.fetch_detail_page(detail_url)
+            venue_name, venue_address, venue_url = (
+                self.extract_venue_from_soup(detail_soup, detail_url)
+                if detail_soup is not None else ("", "", detail_url)
+            )
+
+            # La page de détail s'est avérée plus fiable que la page de
+            # liste de l'équipe pour l'heure exacte (cas observé : la page
+            # de liste affichait encore l'ancien horaire après un
+            # changement décidé par le club/la ligue). On la privilégie
+            # quand elle est disponible et cohérente sur la date.
+            detail_dt = self.extract_detail_datetime(detail_soup) if detail_soup is not None else None
+            if detail_dt and (detail_dt["day"], detail_dt["month"]) == (meta["day"], meta["month"]):
+                if (detail_dt["hour"], detail_dt["minute"]) != (meta["hour"], meta["minute"]):
+                    LOG.warning(
+                        "Heure divergente pour le match #%s : liste=%02dh%02d, détail=%02dh%02d "
+                        "-> utilisation de l'heure de la page de détail",
+                        meta["match_id"], meta["hour"], meta["minute"],
+                        detail_dt["hour"], detail_dt["minute"]
+                    )
+                meta["year"] = detail_dt["year"]
+                meta["hour"] = detail_dt["hour"]
+                meta["minute"] = detail_dt["minute"]
 
             dt = datetime(
                 meta["year"], meta["month"], meta["day"],
@@ -326,7 +390,17 @@ def build_ics(cfg, matches):
     cal.add("x-wr-calname", cfg["calendar"]["name"])
     cal.add("x-wr-timezone", cfg["calendar"]["timezone"])
 
-    tzinfo = tz.gettz(cfg["calendar"]["timezone"])
+    tz_name = cfg["calendar"]["timezone"]
+    try:
+        tzinfo = ZoneInfo(tz_name)
+    except Exception as exc:
+        raise ValueError(
+            f"Impossible de charger le fuseau horaire {tz_name!r} : {exc}\n"
+            "Si l'erreur mentionne 'No time zone found' ou 'ZoneInfoNotFoundError', "
+            "la base de fuseaux horaires du système est absente (fréquent sur Windows "
+            "ou certaines images Docker/CI minimalistes). Solution : "
+            "ajouter 'tzdata' dans requirements.txt (pip install tzdata)."
+        ) from exc
     duration = timedelta(minutes=cfg["calendar"]["duration_minutes"])
 
     for m in sorted(matches, key=lambda x: (x.date, x.time, x.child)):
@@ -338,6 +412,11 @@ def build_ics(cfg, matches):
         # (d'où le décalage de +2h observé). L'UTC (suffixe "Z") est sans
         # ambiguïté pour tous les lecteurs de calendrier.
         start_local = datetime.fromisoformat(f"{m.date}T{m.time}").replace(tzinfo=tzinfo)
+        if start_local.utcoffset() is None:
+            raise ValueError(
+                f"Échec de localisation de la date pour le match #{m.match_id} "
+                f"({m.date} {m.time}) : le fuseau horaire n'a pas pu être appliqué."
+            )
         end_local = start_local + duration
         start = start_local.astimezone(timezone.utc)
         end = end_local.astimezone(timezone.utc)
