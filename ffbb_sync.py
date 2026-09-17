@@ -85,9 +85,9 @@ class FFBBClient:
         On privilégie cette signature, puis quelques variantes de nom de fichier.
         """
         found = []
-        for img in soup.find_all("img"):
+        for img in soup.find_all("image"):
             src = (img.get("href") or "").lower()
-            if "versus.svg" not in src:
+            if "/svg/versus.svg" not in src:
                 continue
             a = img.find_parent("a", href=True)
             if not a:
@@ -196,11 +196,35 @@ class FFBBClient:
                         return ", ".join(parts)
         return ""
 
+    def find_value_after_label(self, soup, label):
+        """
+        Cherche un <span> dont le texte correspond exactement au label
+        (ex: "Adresse", "Nom"), puis récupère la valeur dans le <div> frère
+        DIRECT de ce span (même parent), structure du type :
+            <div>
+                <span>Label</span>
+                <div><span>Valeur</span></div>
+            </div>
+        """
+        for span in soup.find_all("span"):
+            if self.clean(span.get_text()) != label:
+                continue
+
+            sibling = span.find_next_sibling("div")
+            if sibling:
+                val_span = sibling.find("span")
+                value = self.clean(val_span.get_text()) if val_span else self.clean(sibling.get_text())
+                if value:
+                    return value
+
+        return ""
+
     def extract_venue(self, detail_url):
         """
-        Cherche d'abord les données sémantiques/JSON-LD, puis les blocs textuels
-        contenant salle/adresse. Le parseur est volontairement tolérant pour
-        absorber les évolutions de la page FFBB.
+        Cherche d'abord les données sémantiques/JSON-LD, puis, à défaut,
+        la structure HTML "label / valeur" utilisée par les pages FFBB
+        (span "Adresse" et span "Nom" suivis d'un div frère contenant la
+        valeur).
         """
         if not detail_url:
             return "", "", ""
@@ -208,47 +232,10 @@ class FFBBClient:
         soup = BeautifulSoup(self.get(detail_url), "html.parser")
 
         address = self.parse_jsonld_address(soup)
-        text = self.clean(soup.get_text(" ", strip=True))
-
-        venue_name = ""
-        # Plusieurs formulations possibles sur les pages de rencontre.
-        labels = [
-            r"(?:Salle|Gymnase|Lieu)\s*[:\-]\s*([^|]+?)(?=\s+(?:Adresse|Date|Heure)\b|$)",
-            r"(?:Nom de la salle)\s*[:\-]\s*([^|]+?)(?=\s+(?:Adresse|Date|Heure)\b|$)",
-        ]
-        for pat in labels:
-            m = re.search(pat, text, flags=re.I)
-            if m:
-                venue_name = self.clean(m.group(1))
-                break
-
         if not address:
-            m = re.search(
-                r"(?:Adresse)\s*[:\-]\s*(.+?)(?=\s+(?:Date|Heure|Arbitre|Officiels)\b|$)",
-                text, flags=re.I
-            )
-            if m:
-                address = self.clean(m.group(1))
+            address = self.find_value_after_label(soup, "Adresse")
 
-        # Dernier recours : chercher un bloc qui ressemble à une adresse française.
-        if not address:
-            m = re.search(
-                r"\b\d{1,4}\s+[A-Za-zÀ-ÿ0-9'’ .-]{3,60}\s+\d{5}\s+[A-Za-zÀ-ÿ'’ -]{2,50}\b",
-                text
-            )
-            if m:
-                address = self.clean(m.group(0))
-
-        # Si aucun nom de salle n'a été isolé, tenter un élément proche d'une adresse.
-        if not venue_name and address:
-            for tag in soup.find_all(["div", "section", "li", "p", "td"]):
-                tx = self.clean(tag.get_text(" ", strip=True))
-                if address in tx and len(tx) < 300:
-                    tx2 = re.sub(re.escape(address), " ", tx, flags=re.I)
-                    tx2 = self.clean(tx2.strip(" -:|"))
-                    if 2 <= len(tx2) <= 100:
-                        venue_name = tx2
-                        break
+        venue_name = self.find_value_after_label(soup, "Nom")
 
         return venue_name, address, detail_url
 
