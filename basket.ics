@@ -7,9 +7,9 @@ X-WR-CALNAME:Basket enfants
 X-WR-TIMEZONE:Europe/Paris
 BEGIN:VEVENT
 SUMMARY:Match basket Jules
-DTSTART:20260919T130000Z
-DTEND:20260919T143000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20260919T110000Z
+DTEND:20260919T123000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-16036-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
  e : US THOUAREENNE THOUARE - 1\nType : Domicile\nJournée : J1\nPhase : ph
@@ -23,9 +23,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Bastien
-DTSTART:20260919T140000Z
-DTEND:20260919T153000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20260919T120000Z
+DTEND:20260919T133000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-14014-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
   SIMILIENNE NANTES - 1\nType : Domicile\nJournée : J1\nPhase : phase-1\nF
@@ -38,9 +38,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Jules
-DTSTART:20260926T140000Z
-DTEND:20260926T153000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20260926T120000Z
+DTEND:20260926T133000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-16156-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
  e : AS SAINT ROGATIEN NANTES - 2\nType : Extérieur\nJournée : J2\nPhase 
@@ -54,9 +54,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Bastien
-DTSTART:20260926T181500Z
-DTEND:20260926T194500Z
-DTSTAMP:20260917T210348Z
+DTSTART:20260926T161500Z
+DTEND:20260926T174500Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-14119-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
   BASKET SUD LOIRE\nType : Extérieur\nJournée : J2\nPhase : phase-1\nFFBB
@@ -70,9 +70,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Jules
-DTSTART:20261003T130000Z
-DTEND:20261003T143000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261003T110000Z
+DTEND:20261003T123000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-16276-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
  e : ASPTT NANTES - 2\nType : Domicile\nJournée : J3\nPhase : phase-1\nFFB
@@ -85,9 +85,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Bastien
-DTSTART:20261003T153000Z
-DTEND:20261003T170000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261003T133000Z
+DTEND:20261003T150000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-14223-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
   ASPTT NANTES - 2\nType : Extérieur\nJournée : J3\nPhase : phase-1\nFFBB
@@ -100,9 +100,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Jules
-DTSTART:20261010T150000Z
-DTEND:20261010T163000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261010T130000Z
+DTEND:20261010T143000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-16396-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
  e : ERDRE BASKET CLUB - 2\nType : Extérieur\nJournée : J4\nPhase : phase
@@ -117,9 +117,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Bastien
-DTSTART:20261010T153000Z
-DTEND:20261010T170000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261010T133000Z
+DTEND:20261010T150000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-14327-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
   NORT SUR ERDRE AC LES TOUCHES BASKET - 1\nType : Domicile\nJournée : J4\
@@ -133,9 +133,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Jules
-DTSTART:20261017T143000Z
-DTEND:20261017T160000Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261017T123000Z
+DTEND:20261017T140000Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-16516-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
  e : AL CHAUVINIERE\nType : Domicile\nJournée : J5\nPhase : phase-1\nFFBB 
@@ -148,9 +148,9 @@ URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Match basket Bastien
-DTSTART:20261017T161500Z
-DTEND:20261017T174500Z
-DTSTAMP:20260917T210348Z
+DTSTART:20261017T141500Z
+DTEND:20261017T154500Z
+DTSTAMP:20260917T213755Z
 UID:ffbb-14433-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
   HIRONDELLE BASKET - 1\nType : Extérieur\nJournée : J5\nPhase : phase-1\
