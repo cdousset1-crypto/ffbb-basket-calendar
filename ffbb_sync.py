@@ -86,7 +86,7 @@ class FFBBClient:
         """
         found = []
         for img in soup.find_all("img"):
-            src = (img.get("src") or "").lower()
+            src = (img.get("href") or "").lower()
             if "versus.svg" not in src:
                 continue
             a = img.find_parent("a", href=True)
