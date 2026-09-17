@@ -5,4 +5,162 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Basket enfants
 X-WR-TIMEZONE:Europe/Paris
+BEGIN:VEVENT
+SUMMARY:Match basket Jules
+DTSTART;TZID=Europe/Paris:20260919T150000
+DTEND;TZID=Europe/Paris:20260919T163000
+DTSTAMP:20260917T204111Z
+UID:ffbb-16036-jules@basket-calendar
+DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
+ e : US THOUAREENNE THOUARE - 1\nType : Domicile\nJournée : J1\nPhase : ph
+ ase-1\nFFBB : https://competitions.ffbb.com/ligues/pdl/comites/0044/compet
+ itions/dmu11/match/200000014713688\nDétail lieu/rencontre : https://compe
+ titions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu11/match/20000001
+ 4713688
+LOCATION:SALLE JEAN VINCENT\, Rue Marcel et Marie Michel\, 44300 Nantes
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014713688
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Bastien
+DTSTART;TZID=Europe/Paris:20260919T160000
+DTEND;TZID=Europe/Paris:20260919T173000
+DTSTAMP:20260917T204111Z
+UID:ffbb-14014-bastien@basket-calendar
+DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
+  SIMILIENNE NANTES - 1\nType : Domicile\nJournée : J1\nPhase : phase-1\nF
+ FBB : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/d
+ mu13/match/200000014714266\nDétail lieu/rencontre : https://competitions.
+ ffbb.com/ligues/pdl/comites/0044/competitions/dmu13/match/200000014714266
+LOCATION:COMPLEXE JEAN GAUVRIT N1\, Rue Louis Armand\, 44470 Carquefou
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 13/match/200000014714266
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Jules
+DTSTART;TZID=Europe/Paris:20260926T160000
+DTEND;TZID=Europe/Paris:20260926T173000
+DTSTAMP:20260917T204111Z
+UID:ffbb-16156-jules@basket-calendar
+DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
+ e : AS SAINT ROGATIEN NANTES - 2\nType : Extérieur\nJournée : J2\nPhase 
+ : phase-1\nFFBB : https://competitions.ffbb.com/ligues/pdl/comites/0044/co
+ mpetitions/dmu11/match/200000014713808\nDétail lieu/rencontre : https://c
+ ompetitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu11/match/2000
+ 00014713808
+LOCATION:SALLE DES AGENETS\, Rue du Casterneau\, 44000 Nantes
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014713808
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Bastien
+DTSTART;TZID=Europe/Paris:20260926T201500
+DTEND;TZID=Europe/Paris:20260926T214500
+DTSTAMP:20260917T204111Z
+UID:ffbb-14119-bastien@basket-calendar
+DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
+  BASKET SUD LOIRE\nType : Extérieur\nJournée : J2\nPhase : phase-1\nFFBB
+  : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu1
+ 3/match/200000014714371\nDétail lieu/rencontre : https://competitions.ffb
+ b.com/ligues/pdl/comites/0044/competitions/dmu13/match/200000014714371
+LOCATION:COMPLEXE SPORTIF P. BOUCHAUD\, Rue des Sports\, 44690 Saint-Fiacr
+ e-sur-Maine
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 13/match/200000014714371
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Jules
+DTSTART;TZID=Europe/Paris:20261003T150000
+DTEND;TZID=Europe/Paris:20261003T163000
+DTSTAMP:20260917T204111Z
+UID:ffbb-16276-jules@basket-calendar
+DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
+ e : ASPTT NANTES - 2\nType : Domicile\nJournée : J3\nPhase : phase-1\nFFB
+ B : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014713928\nDétail lieu/rencontre : https://competitions.ff
+ bb.com/ligues/pdl/comites/0044/competitions/dmu11/match/200000014713928
+LOCATION:SALLE JEAN VINCENT\, Rue Marcel et Marie Michel\, 44300 Nantes
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014713928
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Bastien
+DTSTART;TZID=Europe/Paris:20261003T173000
+DTEND;TZID=Europe/Paris:20261003T190000
+DTSTAMP:20260917T204111Z
+UID:ffbb-14223-bastien@basket-calendar
+DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
+  ASPTT NANTES - 2\nType : Extérieur\nJournée : J3\nPhase : phase-1\nFFBB
+  : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu1
+ 3/match/200000014714475\nDétail lieu/rencontre : https://competitions.ffb
+ b.com/ligues/pdl/comites/0044/competitions/dmu13/match/200000014714475
+LOCATION:Gymnase Christiane MOREAU\, Rue Nicolas Appert\, 44100 Nantes
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 13/match/200000014714475
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Jules
+DTSTART;TZID=Europe/Paris:20261010T170000
+DTEND;TZID=Europe/Paris:20261010T183000
+DTSTAMP:20260917T204111Z
+UID:ffbb-16396-jules@basket-calendar
+DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
+ e : ERDRE BASKET CLUB - 2\nType : Extérieur\nJournée : J4\nPhase : phase
+ -1\nFFBB : https://competitions.ffbb.com/ligues/pdl/comites/0044/competiti
+ ons/dmu11/match/200000014714048\nDétail lieu/rencontre : https://competit
+ ions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu11/match/20000001471
+ 4048
+LOCATION:HALLE DES SPORTS DE MAZAIRE - T2\, Rue de la Hautière\, 44240 La
+  Chapelle-sur-Erdre
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014714048
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Bastien
+DTSTART;TZID=Europe/Paris:20261010T173000
+DTEND;TZID=Europe/Paris:20261010T190000
+DTSTAMP:20260917T204111Z
+UID:ffbb-14327-bastien@basket-calendar
+DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
+  NORT SUR ERDRE AC LES TOUCHES BASKET - 1\nType : Domicile\nJournée : J4\
+ nPhase : phase-1\nFFBB : https://competitions.ffbb.com/ligues/pdl/comites/
+ 0044/competitions/dmu13/match/200000014714579\nDétail lieu/rencontre : ht
+ tps://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu13/mat
+ ch/200000014714579
+LOCATION:COMPLEXE JEAN GAUVRIT N1\, Rue Louis Armand\, 44470 Carquefou
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 13/match/200000014714579
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Jules
+DTSTART;TZID=Europe/Paris:20261017T163000
+DTEND;TZID=Europe/Paris:20261017T180000
+DTSTAMP:20260917T204111Z
+UID:ffbb-16516-jules@basket-calendar
+DESCRIPTION:Enfant : Jules\nÉquipe : BEAUJOIRE BASKET CLUB - 1\nAdversair
+ e : AL CHAUVINIERE\nType : Domicile\nJournée : J5\nPhase : phase-1\nFFBB 
+ : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu11
+ /match/200000014714168\nDétail lieu/rencontre : https://competitions.ffbb
+ .com/ligues/pdl/comites/0044/competitions/dmu11/match/200000014714168
+LOCATION:SALLE JEAN VINCENT\, Rue Marcel et Marie Michel\, 44300 Nantes
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 11/match/200000014714168
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Match basket Bastien
+DTSTART;TZID=Europe/Paris:20261017T181500
+DTEND;TZID=Europe/Paris:20261017T194500
+DTSTAMP:20260917T204111Z
+UID:ffbb-14433-bastien@basket-calendar
+DESCRIPTION:Enfant : Bastien\nÉquipe : CARQUEFOU BASKET - 2\nAdversaire :
+  HIRONDELLE BASKET - 1\nType : Extérieur\nJournée : J5\nPhase : phase-1\
+ nFFBB : https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions
+ /dmu13/match/200000014714685\nDétail lieu/rencontre : https://competition
+ s.ffbb.com/ligues/pdl/comites/0044/competitions/dmu13/match/20000001471468
+ 5
+LOCATION:SALLE DU CHEVALIER\, Route Félix Praud\, 44450 Saint-Julien-de-C
+ oncelles
+URL:https://competitions.ffbb.com/ligues/pdl/comites/0044/competitions/dmu
+ 13/match/200000014714685
+END:VEVENT
 END:VCALENDAR
