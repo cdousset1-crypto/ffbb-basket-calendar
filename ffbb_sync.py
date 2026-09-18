@@ -434,16 +434,13 @@ def build_ics(cfg, matches):
 
         description = "\n".join([
             f"Enfant : {m.child}",
-            f"Équipe : {m.team}",
             f"Adversaire : {m.opponent or 'Non détecté'}",
             f"Type : {m.home_away or 'Non précisé'}",
             f"Journée : {m.round_name or 'Non précisée'}",
             f"Phase : {m.phase}",
             f"FFBB : {m.detail_url}",
         ])
-        if m.venue_url:
-            description += f"\nDétail lieu/rencontre : {m.venue_url}"
-
+        
         event.add("description", description)
         event.add("url", m.detail_url)
         cal.add_component(event)
