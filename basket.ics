@@ -9,7 +9,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Jules
 DTSTART:20260919T110000Z
 DTEND:20260919T123000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-16036-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nAdversaire : US THOUAREENNE THOUARE - 1\nType 
  : Domicile\nJournée : J1\nPhase : phase-1\nFFBB : https://competitions.ff
@@ -22,7 +22,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Bastien
 DTSTART:20260919T120000Z
 DTEND:20260919T133000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-14014-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nAdversaire : SIMILIENNE NANTES - 1\nType : D
  omicile\nJournée : J1\nPhase : phase-1\nFFBB : https://competitions.ffbb.
@@ -35,7 +35,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Jules
 DTSTART:20260926T120000Z
 DTEND:20260926T133000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-16156-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nAdversaire : AS SAINT ROGATIEN NANTES - 2\nTyp
  e : Extérieur\nJournée : J2\nPhase : phase-1\nFFBB : https://competition
@@ -49,7 +49,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Bastien
 DTSTART:20260926T161500Z
 DTEND:20260926T174500Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-14119-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nAdversaire : BASKET SUD LOIRE\nType : Extér
  ieur\nJournée : J2\nPhase : phase-1\nFFBB : https://competitions.ffbb.com
@@ -63,7 +63,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Jules
 DTSTART:20261003T110000Z
 DTEND:20261003T123000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-16276-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nAdversaire : ASPTT NANTES - 2\nType : Domicile
  \nJournée : J3\nPhase : phase-1\nFFBB : https://competitions.ffbb.com/lig
@@ -76,7 +76,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Bastien
 DTSTART:20261003T133000Z
 DTEND:20261003T150000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-14223-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nAdversaire : ASPTT NANTES - 2\nType : Extér
  ieur\nJournée : J3\nPhase : phase-1\nFFBB : https://competitions.ffbb.com
@@ -89,7 +89,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Jules
 DTSTART:20261010T130000Z
 DTEND:20261010T143000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-16396-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nAdversaire : ERDRE BASKET CLUB - 2\nType : Ext
  érieur\nJournée : J4\nPhase : phase-1\nFFBB : https://competitions.ffbb.
@@ -103,7 +103,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Bastien
 DTSTART:20261010T133000Z
 DTEND:20261010T150000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-14327-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nAdversaire : NORT SUR ERDRE AC LES TOUCHES B
  ASKET - 1\nType : Domicile\nJournée : J4\nPhase : phase-1\nFFBB : https:/
@@ -117,7 +117,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Jules
 DTSTART:20261017T123000Z
 DTEND:20261017T140000Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-16516-jules@basket-calendar
 DESCRIPTION:Enfant : Jules\nAdversaire : AL CHAUVINIERE\nType : Domicile\n
  Journée : J5\nPhase : phase-1\nFFBB : https://competitions.ffbb.com/ligue
@@ -130,7 +130,7 @@ BEGIN:VEVENT
 SUMMARY:Match basket Bastien
 DTSTART:20261017T141500Z
 DTEND:20261017T154500Z
-DTSTAMP:20260920T002305Z
+DTSTAMP:20260921T002243Z
 UID:ffbb-14433-bastien@basket-calendar
 DESCRIPTION:Enfant : Bastien\nAdversaire : HIRONDELLE BASKET - 1\nType : E
  xtérieur\nJournée : J5\nPhase : phase-1\nFFBB : https://competitions.ffb
