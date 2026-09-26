@@ -6,7 +6,7 @@ calendar:
 
 http:
   timeout_seconds: 25
-  user_agent: "FFBB-Basket-Calendar/1.0 (+personal calendar synchronization)"
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
 
 season:
   # Saison 2026-2027 : les dates de septembre à décembre sont en 2026,
