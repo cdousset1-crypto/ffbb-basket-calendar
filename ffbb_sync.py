@@ -5,6 +5,7 @@ import html
 import json
 import logging
 import re
+import time
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -54,17 +55,55 @@ class Match:
 
 
 class FFBBClient:
+    HOME_URL = "https://competitions.ffbb.com/"
+
     def __init__(self, cfg):
         self.cfg = cfg
         self.session = requests.Session()
         self.session.headers.update({
             "User-Agent": cfg["http"]["user_agent"],
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Referer": self.HOME_URL,
         })
         self.timeout = cfg["http"]["timeout_seconds"]
+        self._warmed_up = False
+
+    def _warm_up(self):
+        """
+        Visite la page d'accueil avant toute autre requête, pour obtenir les
+        cookies de session que la protection anti-bot du site (WAF) exige
+        avant d'autoriser l'accès aux pages profondes. Sans ce cookie
+        initial, les requêtes directes vers une page d'équipe ou de match
+        peuvent être bloquées avec un 403, alors qu'un vrai navigateur, qui
+        passe toujours par une page d'accueil ou un lien, l'obtient
+        automatiquement.
+        """
+        if self._warmed_up:
+            return
+        try:
+            self.session.get(self.HOME_URL, timeout=self.timeout)
+        except requests.RequestException as exc:
+            LOG.warning("Échec de la visite de la page d'accueil (%s), on continue quand même", exc)
+        self._warmed_up = True
 
     def get(self, url):
-        r = self.session.get(url, timeout=self.timeout)
+        self._warm_up()
+        r = self.session.get(url, timeout=self.timeout, headers={"Referer": self.HOME_URL})
+        if r.status_code == 403:
+            # Nouvelle tentative après une courte pause : certaines
+            # protections anti-bot laissent passer la deuxième requête une
+            # fois les cookies de session posés par la première.
+            LOG.warning("403 reçu pour %s, nouvel essai après une pause", url)
+            time.sleep(2)
+            r = self.session.get(url, timeout=self.timeout, headers={"Referer": self.HOME_URL})
         r.raise_for_status()
         return r.text
 
@@ -434,13 +473,16 @@ def build_ics(cfg, matches):
 
         description = "\n".join([
             f"Enfant : {m.child}",
+            f"Équipe : {m.team}",
             f"Adversaire : {m.opponent or 'Non détecté'}",
             f"Type : {m.home_away or 'Non précisé'}",
             f"Journée : {m.round_name or 'Non précisée'}",
             f"Phase : {m.phase}",
             f"FFBB : {m.detail_url}",
         ])
-        
+        if m.venue_url:
+            description += f"\nDétail lieu/rencontre : {m.venue_url}"
+
         event.add("description", description)
         event.add("url", m.detail_url)
         cal.add_component(event)
