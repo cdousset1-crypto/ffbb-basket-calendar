@@ -1,4 +1,4 @@
 PyYAML>=6.0,<7
 icalendar>=6.3,<7
-ffbb-data-client
+requests
 
