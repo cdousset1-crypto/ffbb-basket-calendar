@@ -16,11 +16,8 @@ season:
 
 children:
   - name: "Jules"
-    phases:
-      - name: "phase-1"
-        url: "https://competitions.ffbb.com/ligues/pdl/comites/0044/clubs/pdl0044104/equipes/200000005368033"
+    equipe_id: "8707"
 
   - name: "Bastien"
-    phases:
-      - name: "phase-1"
-        url: "https://competitions.ffbb.com/ligues/pdl/comites/0044/clubs/pdl0044087/equipes/200000005367465"
+    equipe_id: "8695"
+        
