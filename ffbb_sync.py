@@ -6,14 +6,15 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import requests
 import yaml
 from icalendar import Calendar, Event
 from zoneinfo import ZoneInfo
 
-from ffbb_data_client import FFBBDataClient
-
 
 LOG = logging.getLogger("ffbb-sync")
+
+API_BASE = "https://ffbb-api.desimone.fr"
 
 
 @dataclass
@@ -34,29 +35,6 @@ class Match:
     venue_url: str = ""
 
 
-def resolve_equipe_id(phase: dict) -> str:
-    """
-    Retourne l'identifiant d'équipe (engagement) FFBB à utiliser pour filtrer
-    les rencontres. Accepte soit un "equipe_id" explicite dans config.yaml,
-    soit (pour ne pas casser une config existante) une "url" du type
-    ".../equipes/200000005368033", dont on extrait l'identifiant numérique.
-    """
-    equipe_id = phase.get("equipe_id")
-    if equipe_id:
-        return str(equipe_id)
-
-    url = phase.get("url", "")
-    m = re.search(r"/equipes/(\d+)", url)
-    if m:
-        return m.group(1)
-
-    raise ValueError(
-        f"Phase {phase!r} : impossible de déterminer l'ID d'équipe. "
-        "Ajoute 'equipe_id: \"...\"' dans config.yaml (ou garde une 'url' "
-        "contenant '/equipes/<id>')."
-    )
-
-
 def slug(s: str) -> str:
     s = s.lower()
     s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
@@ -68,96 +46,74 @@ def load_config():
         return yaml.safe_load(f)
 
 
-class FFBBDataSource:
+def iter_phases(child_cfg: dict):
     """
-    Récupère les rencontres directement depuis l'API de données FFBB (via la
-    bibliothèque ffbb-data-client), au lieu de scraper le HTML du site
-    competitions.ffbb.com. Cela évite le blocage 403 (protection anti-bot du
-    site) et fournit des données déjà structurées (date, heure, salle,
-    adresse) sans avoir à parser du HTML fragile ni à recouper plusieurs
-    pages entre elles.
+    Accepte deux formats de config.yaml :
+      - à plat (recommandé) : name / organisme_id / team directement sur l'enfant
+      - imbriqué (rétro-compatibilité) : name + une liste "phases", chacune
+        avec son propre organisme_id / team
     """
+    if "phases" in child_cfg:
+        for phase in child_cfg["phases"]:
+            yield phase
+    else:
+        yield {
+            "name": child_cfg.get("team") or child_cfg["name"],
+            "organisme_id": child_cfg["organisme_id"],
+            "team": child_cfg.get("team"),
+        }
 
-    def __init__(self):
-        self.client = FFBBDataClient.create()
 
-    def fetch_matches(self, child: str, phase: dict) -> list[Match]:
-        equipe_id = resolve_equipe_id(phase)
+def fetch_club_matches(organisme_id, team, limit=500, timeout=30):
+    """
+    Interroge l'API FFBB hébergée (ffbb-api.desimone.fr), qui résout déjà
+    côté serveur les rencontres du club, l'équipe correspondante (via le
+    filtre texte "team") et l'adresse exacte de la salle.
+    """
+    url = f"{API_BASE}/api/v1/club/{organisme_id}/matches"
+    params = {"limit": limit}
+    if team:
+        params["team"] = team
 
-        # Un match peut placer notre équipe en "équipe 1" (domicile, par
-        # convention FFBB) ou en "équipe 2" (extérieur) : on doit chercher
-        # les deux cas avec un OR dans le filtre Meilisearch.
-        filter_expr = (
-            f'idEngagementEquipe1.id = "{equipe_id}" '
-            f'OR idEngagementEquipe2.id = "{equipe_id}"'
+    r = requests.get(url, params=params, timeout=timeout)
+    r.raise_for_status()
+    return r.json()
+
+
+def build_match(child: str, phase_name: str, raw: dict) -> Match | None:
+    match_id = str(raw.get("ffbbMatchId") or "")
+    date_iso = raw.get("dateISO") or ""
+    time_str = raw.get("time") or ""
+
+    if not match_id or not date_iso or not time_str:
+        LOG.warning(
+            "Match ignoré pour %s (%s) : données incomplètes (id=%r, date=%r, heure=%r)",
+            child, phase_name, match_id, date_iso, time_str
         )
+        return None
 
-        result = self.client.search_rencontres(filter=[filter_expr], limit=200)
-        hits = result.hits if result else []
+    is_home = bool(raw.get("isHome"))
+    round_num = raw.get("round")
+    round_name = f"J{round_num}" if round_num else ""
 
-        if not hits:
-            LOG.warning(
-                "Aucune rencontre trouvée pour %s / %s (equipe_id=%s) : "
-                "vérifie l'ID d'équipe dans config.yaml",
-                child, phase["name"], equipe_id
-            )
+    uid = f"ffbb-{match_id}-{slug(child)}@basket-calendar"
 
-        matches = []
-        for hit in hits:
-            match = self._build_match(child, phase, equipe_id, hit)
-            if match:
-                matches.append(match)
-        return matches
-
-    def _build_match(self, child, phase, equipe_id, hit) -> Match | None:
-        if hit.date_rencontre is None or hit.horaire is None:
-            LOG.warning(
-                "Match %s ignoré : date ou heure manquante côté API", hit.id
-            )
-            return None
-
-        is_home = bool(
-            hit.id_engagement_equipe1 and hit.id_engagement_equipe1.id == equipe_id
-        )
-        is_away = bool(
-            hit.id_engagement_equipe2 and hit.id_engagement_equipe2.id == equipe_id
-        )
-        if not (is_home or is_away):
-            # Ne devrait pas arriver vu le filtre utilisé, mais on se protège
-            # d'un éventuel comportement inattendu de l'API.
-            LOG.warning(
-                "Match %s ignoré : ne correspond à aucune des deux équipes "
-                "attendues (equipe_id=%s)", hit.id, equipe_id
-            )
-            return None
-
-        team = hit.nom_equipe1 if is_home else hit.nom_equipe2
-        opponent = hit.nom_equipe2 if is_home else hit.nom_equipe1
-        home_away = "Domicile" if is_home else "Extérieur"
-
-        round_name = f"J{hit.numero_journee}" if hit.numero_journee else ""
-
-        venue_name = hit.salle.libelle if hit.salle else ""
-        venue_address = hit.salle.adresse if hit.salle else ""
-
-        uid = f"ffbb-{hit.id}-{slug(child)}@basket-calendar"
-
-        return Match(
-            uid=uid,
-            child=child,
-            phase=phase["name"],
-            match_id=str(hit.id),
-            round_name=round_name,
-            date=hit.date_rencontre.date().isoformat(),
-            time=hit.horaire.strftime("%H:%M"),
-            home_away=home_away,
-            opponent=opponent or "",
-            team=team or "",
-            detail_url="",  # L'API ne fournit pas d'URL de page de détail.
-            venue_name=venue_name or "",
-            venue_address=venue_address or "",
-            venue_url="",
-        )
+    return Match(
+        uid=uid,
+        child=child,
+        phase=phase_name,
+        match_id=match_id,
+        round_name=round_name,
+        date=date_iso,
+        time=time_str,
+        home_away="Domicile" if is_home else "Extérieur",
+        opponent=raw.get("opponent") or "",
+        team=raw.get("team") or "",
+        detail_url=raw.get("competitionUrl") or "",
+        venue_name=raw.get("location") or "",
+        venue_address="",
+        venue_url="",
+    )
 
 
 def build_ics(cfg, matches):
@@ -231,17 +187,29 @@ def build_ics(cfg, matches):
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cfg = load_config()
-    source = FFBBDataSource()
 
     all_matches = []
     for child_cfg in cfg["children"]:
         child = child_cfg["name"]
-        for phase in child_cfg.get("phases", []):
-            LOG.info("Lecture %s / %s", child, phase["name"])
+        for phase in iter_phases(child_cfg):
+            phase_name = phase.get("name") or phase.get("team") or "principal"
+            LOG.info("Lecture %s / %s", child, phase_name)
             try:
-                all_matches.extend(source.fetch_matches(child, phase))
+                data = fetch_club_matches(
+                    organisme_id=phase["organisme_id"],
+                    team=phase.get("team"),
+                )
+                raw_matches = data.get("matches", [])
+                LOG.info(
+                    "%s / %s : %d rencontre(s) reçue(s) de l'API",
+                    child, phase_name, len(raw_matches)
+                )
+                for raw in raw_matches:
+                    match = build_match(child, phase_name, raw)
+                    if match:
+                        all_matches.append(match)
             except Exception as exc:
-                LOG.exception("Erreur pour %s/%s: %s", child, phase["name"], exc)
+                LOG.exception("Erreur pour %s/%s: %s", child, phase_name, exc)
 
     # Déduplication par UID.
     unique = {m.uid: m for m in all_matches}
