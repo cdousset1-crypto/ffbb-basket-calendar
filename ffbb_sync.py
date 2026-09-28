@@ -168,7 +168,6 @@ def build_ics(cfg, matches):
             f"Équipe : {m.team}",
             f"Adversaire : {m.opponent or 'Non détecté'}",
             f"Type : {m.home_away or 'Non précisé'}",
-            f"Journée : {m.round_name or 'Non précisée'}",
             f"Phase : {m.phase}",
         ]
         if m.detail_url:
