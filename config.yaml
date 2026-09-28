@@ -16,10 +16,10 @@ season:
 
 children:
   - name: "Jules"
-    equipe_id: "8707"
+    organisme_id: "8707"
     team: "U11 M1"
 
   - name: "Bastien"
-    equipe_id: "8695"
+    organisme_id: "8695"
     team: "U13 M2"
         
