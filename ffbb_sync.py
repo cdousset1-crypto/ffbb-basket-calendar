@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import logging
 import re
+import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -64,20 +66,50 @@ def iter_phases(child_cfg: dict):
         }
 
 
-def fetch_club_matches(organisme_id, team, limit=500, timeout=30):
+def fetch_club_matches(organisme_id, team, limit=500, timeout=30,
+                       attempts=4, backoff_seconds=(3, 10, 30)):
     """
     Interroge l'API FFBB hébergée (ffbb-api.desimone.fr), qui résout déjà
     côté serveur les rencontres du club, l'équipe correspondante (via le
     filtre texte "team") et l'adresse exacte de la salle.
+
+    Les erreurs temporaires (5xx, 429, problèmes réseau) sont retentées
+    plusieurs fois avec une pause croissante ; si l'appel échoue toujours,
+    l'exception est propagée à l'appelant.
     """
     url = f"{API_BASE}/api/v1/club/{organisme_id}/matches"
     params = {"limit": limit}
     if team:
         params["team"] = team
 
-    r = requests.get(url, params=params, timeout=timeout)
-    r.raise_for_status()
-    return r.json()
+    last_exc = None
+    for attempt in range(1, attempts + 1):
+        try:
+            r = requests.get(url, params=params, timeout=timeout)
+            if r.status_code >= 500 or r.status_code == 429:
+                raise requests.HTTPError(
+                    f"{r.status_code} {r.reason} pour {r.url}", response=r
+                )
+            r.raise_for_status()
+            data = r.json()
+            if not isinstance(data, dict) or "matches" not in data:
+                raise ValueError(f"Réponse inattendue de l'API : {str(data)[:200]}")
+            return data
+        except (requests.RequestException, ValueError) as exc:
+            last_exc = exc
+            # Erreur client (4xx hors 429) : inutile de réessayer.
+            resp = getattr(exc, "response", None)
+            if resp is not None and 400 <= resp.status_code < 500 and resp.status_code != 429:
+                raise
+            if attempt < attempts:
+                pause = backoff_seconds[min(attempt - 1, len(backoff_seconds) - 1)]
+                LOG.warning(
+                    "Appel API échoué (essai %d/%d) : %s -> nouvel essai dans %ds",
+                    attempt, attempts, exc, pause
+                )
+                time.sleep(pause)
+
+    raise last_exc
 
 
 def build_match(child: str, phase_name: str, raw: dict) -> Match | None:
@@ -168,6 +200,7 @@ def build_ics(cfg, matches):
             f"Équipe : {m.team}",
             f"Adversaire : {m.opponent or 'Non détecté'}",
             f"Type : {m.home_away or 'Non précisé'}",
+            f"Journée : {m.round_name or 'Non précisée'}",
             f"Phase : {m.phase}",
         ]
         if m.detail_url:
@@ -183,11 +216,13 @@ def build_ics(cfg, matches):
     return cal.to_ical()
 
 
-def main():
+def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cfg = load_config()
+    out = Path(cfg["calendar"]["output"])
 
     all_matches = []
+    failures = []
     for child_cfg in cfg["children"]:
         child = child_cfg["name"]
         for phase in iter_phases(child_cfg):
@@ -198,26 +233,50 @@ def main():
                     organisme_id=phase["organisme_id"],
                     team=phase.get("team"),
                 )
-                raw_matches = data.get("matches", [])
-                LOG.info(
-                    "%s / %s : %d rencontre(s) reçue(s) de l'API",
-                    child, phase_name, len(raw_matches)
-                )
-                for raw in raw_matches:
-                    match = build_match(child, phase_name, raw)
-                    if match:
-                        all_matches.append(match)
             except Exception as exc:
-                LOG.exception("Erreur pour %s/%s: %s", child, phase_name, exc)
+                LOG.error("Erreur pour %s / %s : %s", child, phase_name, exc)
+                failures.append(f"{child} / {phase_name}")
+                continue
+
+            raw_matches = data.get("matches", [])
+            LOG.info(
+                "%s / %s : %d rencontre(s) reçue(s) de l'API",
+                child, phase_name, len(raw_matches)
+            )
+            for raw in raw_matches:
+                match = build_match(child, phase_name, raw)
+                if match:
+                    all_matches.append(match)
+
+    # Au moindre échec, on garde le calendrier existant tel quel : écrire un
+    # fichier partiel ferait disparaître des rencontres de l'agenda.
+    if failures:
+        LOG.error(
+            "Calendrier NON mis à jour (conservation de %s) : échec pour %s",
+            out, ", ".join(failures)
+        )
+        return 1
 
     # Déduplication par UID.
     unique = {m.uid: m for m in all_matches}
+
+    if not unique and out.exists():
+        LOG.error(
+            "L'API n'a renvoyé aucune rencontre : calendrier NON mis à jour "
+            "(conservation de %s)", out
+        )
+        return 1
+
     data = build_ics(cfg, list(unique.values()))
 
-    out = Path(cfg["calendar"]["output"])
-    out.write_bytes(data)
+    # Écriture atomique : fichier temporaire puis remplacement, pour ne jamais
+    # laisser un basket.ics tronqué si le script est interrompu.
+    tmp = out.with_suffix(out.suffix + ".tmp")
+    tmp.write_bytes(data)
+    tmp.replace(out)
     LOG.info("%d événements écrits dans %s", len(unique), out)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
